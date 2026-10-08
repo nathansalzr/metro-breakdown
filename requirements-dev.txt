@@ -1,0 +1,3 @@
+# Everything the app needs, plus tools for testing (install with: pip install -r requirements-dev.txt)
+-r requirements.txt
+pytest>=7.4

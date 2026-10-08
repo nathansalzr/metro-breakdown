@@ -1,0 +1,15 @@
+# Python's compiled cache files (rebuilt automatically every run)
+__pycache__/
+*.pyc
+
+# Each person's own virtual environment (installed from requirements.txt)
+.venv/
+
+# Data we download or build (anyone can recreate it with our scripts)
+data/raw/
+data/metro.db
+
+# Operating-system clutter
+.DS_Store
+Thumbs.db
+desktop.ini
