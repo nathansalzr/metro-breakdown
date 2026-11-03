@@ -1,0 +1,8 @@
+route_id,service_id,trip_id
+RED,WK,R1
+RED,WK,R2
+RED,WK,R3
+BLUE,WK,B1
+GOLD,WK,G1
+GREEN,WK,N1
+BUS9,WK,X1
