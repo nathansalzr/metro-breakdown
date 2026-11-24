@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color
+RED,SM,Red,Red Line,1,E3131B
+BLUE,SM,Blue,Blue Line,0,0072BC
+GOLD,SM,Gold,Gold Line,0,FDB913
+GREEN,SM,Green,Green Line,0,58A738
+BUS9,SM,9,Crosstown Bus (excluded: not rail),3,888888

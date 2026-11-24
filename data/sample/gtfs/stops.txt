@@ -1,0 +1,13 @@
+stop_id,stop_name,stop_lat,stop_lon,location_type,parent_station
+A,Alder,34.0500,-118.3000,0,
+B,Birch,34.0500,-118.2700,0,
+C,Cedar Junction,34.0500,-118.2500,1,
+C1,Cedar Junction (Red platform),34.0501,-118.2501,0,C
+C2,Cedar Junction (Blue platform),34.0499,-118.2499,0,C
+D,Dogwood,34.0300,-118.2400,0,
+E,Elm,34.0000,-118.2400,0,
+F,Fir,34.0800,-118.2500,0,
+G,Ginkgo,34.0400,-118.2200,0,
+H,Hawthorn,34.0400,-118.1900,0,
+I,Ivy,34.0400,-118.1600,0,
+J,Juniper,34.0800,-118.3000,0,
