@@ -4,8 +4,8 @@
 
 CECS 427 Dynamic Networks · California State University, Long Beach · Fall 2026
 
-> **Status: in development.** Phases 1–2 are complete: the real LA Metro rail network loads
-> and is tested. The analyses and the interactive app are next (see [Roadmap](#roadmap)).
+> **Status: in development.** The real LA Metro rail network loads, and rerouting around closed
+> stations works and is tested. Critical-station analysis and the app are next (see [Roadmap](#roadmap)).
 
 ---
 
@@ -113,17 +113,42 @@ Expected: about 111 stations, 112 segments, 6 lines (A, B, C, D, E, K), 1 connec
 no duplicate stations. Run `python scripts/inspect_network.py --gtfs data/sample/gtfs` to see the
 same report for the sample network.
 
+### Phase 3: Trip planning and rerouting
+
+`src/metro/rerouting.py` answers the rider's question with NetworkX's weighted shortest path:
+
+- `find_route(G, start, end)` returns the fastest route and its minutes, or `None` if there is no route.
+- `reroute(G, start, end, closed)` compares the normal route with the route after closing stations and reports the added minutes, or `None` when the trip becomes impossible.
+
+**Try it** (sample network, in `python`):
+
+```python
+import sys; sys.path.insert(0, "src")
+from metro.gtfs import load_network
+from metro.rerouting import reroute
+
+G = load_network("data/sample/gtfs")
+reroute(G, "A", "G", ["C"])   # closing Cedar Junction: 10 -> 13 minutes, +3
+```
+
+Tests: `tests/test_rerouting.py`. The app screen for this phase is still to come.
+
+**Team guide:** [docs/ROADMAP.md](docs/ROADMAP.md) walks through every use case: what it does, the files,
+the steps, and how we know it's done.
+
 ## Project structure
 
 ```
 metro-breakdown/
 ├── src/metro/
 │   ├── graph.py            Phase 1: add_segment, close_stations
-│   └── gtfs.py             Phase 2: load_network (GTFS schedule -> network)
+│   ├── gtfs.py             Phase 2: load_network (GTFS schedule -> network)
+│   └── rerouting.py        Phase 3: find_route, reroute
 ├── scripts/
 │   ├── fetch_gtfs.py       Download LA Metro's rail schedule
 │   └── inspect_network.py  Sanity report for a loaded network
 ├── data/sample/gtfs/       Made-up 10-station network for tests
+├── docs/ROADMAP.md         Use-case walkthrough for the team
 ├── tests/                  One test file per module
 ├── requirements.txt        Libraries the app needs
 ├── requirements-dev.txt    Plus testing tools
@@ -138,8 +163,8 @@ metro-breakdown/
 |-------|-------------|--------|
 | 1 | Network foundation | Complete |
 | 2 | Load LA Metro's rail schedule | Complete |
-| 3 | Trip planning and rerouting around closed stations | Next |
-| 4 | Critical-station analysis (centrality, single points of failure) | Planned |
+| 3 | Trip planning and rerouting around closed stations | In progress (logic done, app screen next) |
+| 4 | Critical-station analysis (centrality, single points of failure) | Next |
 | 5 | Resilience experiments: random vs. targeted closures | Planned |
 | 6 | Interactive web app with a map | Planned |
 
