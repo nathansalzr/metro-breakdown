@@ -166,7 +166,7 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 
 **Goal:** a planner sees which stations carry the most trips and which ones would split the network if closed.
 
-**Status:** logic done in `centrality.py`; tests match the answer key and the LA check passes. Still needed: the app tab. Owner: R3.
+**Status:** done. Logic in `centrality.py`, app in the Critical stations tab. Owner: R3.
 
 **Files:** `src/metro/centrality.py` (new), `tests/test_centrality.py` (new)
 
@@ -184,7 +184,7 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 **Done when:**
 - [x] Tests match the answer key above
 - [x] On LA data the top 3 are Pico, 7th St/Metro Center and Willowbrook/Rosa Parks, in under 5 seconds (0.04 s)
-- [ ] App tab lists the top k and every single point of failure
+- [x] App tab lists the top k and every single point of failure
 
 **Evidence:** the LA top-10 table and the "95 of 111 stations are single points of failure" result, which counts stations only (the 100 bridges are segments). Demo step 4.
 
