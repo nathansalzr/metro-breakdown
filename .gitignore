@@ -9,6 +9,11 @@ __pycache__/
 data/raw/
 data/metro.db
 
+# Secrets: never commit API keys or passwords (share a .env.example instead)
+.env
+.env.*
+!.env.example
+
 # Operating-system clutter
 .DS_Store
 Thumbs.db
