@@ -5,7 +5,7 @@
 CECS 427 Dynamic Networks · California State University, Long Beach · Fall 2026
 
 > **Status: in development.** The real LA Metro rail network loads. Rerouting around closed stations
-> and critical-station analysis work and are tested. The app's Trip planner tab works; its other tabs are next (see [Roadmap](#roadmap)).
+> and critical-station analysis work and are tested, with Trip planner and Critical stations tabs in the app. The Stress test is next (see [Roadmap](#roadmap)).
 
 ---
 
@@ -165,7 +165,7 @@ pieces_after_closing(G, "C")           # Fir is cut off from the other 8 station
 
 On LA data the top 3 are Pico, 7th St/Metro Center, and Willowbrook/Rosa Parks.
 95 of 111 stations are single points of failure (articulation points), and 100 of 112 segments
-are bridges. Tests: `tests/test_centrality.py`.
+are bridges. Tests: `tests/test_centrality.py`. App: the **Critical stations** tab.
 
 **Team guide:** [docs/ROADMAP.md](docs/ROADMAP.md) walks through every use case: what it does, the files,
 the steps, and how we know it's done.
@@ -202,9 +202,9 @@ metro-breakdown/
 | 1 | Network foundation | Complete |
 | 2 | Load LA Metro's rail schedule | Complete |
 | 3 | Trip planning and rerouting around closed stations | Complete (demo screenshots next) |
-| 4 | Critical-station analysis (centrality, single points of failure) | In progress (logic done, app screen next) |
+| 4 | Critical-station analysis (centrality, single points of failure) | Complete |
 | 5 | Resilience experiments: random vs. targeted closures | Planned |
-| 6 | Interactive web app with a map | In progress (Trip planner tab done; Critical stations and Stress test tabs next) |
+| 6 | Interactive web app with a map | In progress (Trip planner and Critical stations tabs done; Stress test tab next) |
 
 ## Technology
 
