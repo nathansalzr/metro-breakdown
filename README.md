@@ -5,7 +5,7 @@
 CECS 427 Dynamic Networks · California State University, Long Beach · Fall 2026
 
 > **Status: in development.** The real LA Metro rail network loads. Rerouting around closed stations
-> and critical-station analysis work and are tested. The app is next (see [Roadmap](#roadmap)).
+> and critical-station analysis work and are tested. The app's Trip planner tab works; its other tabs are next (see [Roadmap](#roadmap)).
 
 ---
 
@@ -36,7 +36,7 @@ The data is LA Metro's public rail schedule in the standard [GTFS](https://gtfs.
 
 ## Getting started
 
-**Requirements:** Python 3.9+ and Git, on Windows, macOS, or Linux. No accounts or API keys.
+**Requirements:** Python 3.11+ and Git, on Windows, macOS, or Linux. No accounts or API keys.
 
 ```bash
 git clone https://github.com/nathansalzr/metro-breakdown.git
@@ -59,6 +59,16 @@ Run the tests (all should pass):
 ```bash
 python -m pytest -v
 ```
+
+Start the app (it opens in your browser at http://localhost:8501):
+
+```bash
+python scripts/fetch_gtfs.py   # once, to download the LA data; without it the app uses the sample network
+streamlit run app.py
+```
+
+`.streamlit/config.toml` keeps the app on your own computer (other devices on the same Wi-Fi
+can't open it) and turns off Streamlit's usage statistics and its first-run email question.
 
 ## Development phases
 
@@ -131,7 +141,7 @@ G = load_network("data/sample/gtfs")
 reroute(G, "A", "G", ["C"])   # closing Cedar Junction: 10 -> 13 minutes, +3
 ```
 
-Tests: `tests/test_rerouting.py`. The app screen for this phase is still to come.
+Tests: `tests/test_rerouting.py`. App: the **Trip planner** tab (see [Start the app](#getting-started)).
 
 ### Phase 4: Critical stations
 
@@ -164,6 +174,8 @@ the steps, and how we know it's done.
 
 ```
 metro-breakdown/
+├── app.py                  Streamlit app: streamlit run app.py
+├── .streamlit/config.toml  App settings (localhost only, no usage statistics)
 ├── src/metro/
 │   ├── graph.py            Phase 1: add_segment, close_stations
 │   ├── gtfs.py             Phase 2: load_network (GTFS schedule -> network)
@@ -189,18 +201,19 @@ metro-breakdown/
 |-------|-------------|--------|
 | 1 | Network foundation | Complete |
 | 2 | Load LA Metro's rail schedule | Complete |
-| 3 | Trip planning and rerouting around closed stations | In progress (logic done, app screen next) |
+| 3 | Trip planning and rerouting around closed stations | Complete (demo screenshots next) |
 | 4 | Critical-station analysis (centrality, single points of failure) | In progress (logic done, app screen next) |
 | 5 | Resilience experiments: random vs. targeted closures | Planned |
-| 6 | Interactive web app with a map | Planned |
+| 6 | Interactive web app with a map | In progress (Trip planner tab done; Critical stations and Stress test tabs next) |
 
 ## Technology
 
 | Purpose | Tool |
 |---------|------|
-| Language | Python 3.9+ |
+| Language | Python 3.11+ |
 | Network modeling and algorithms | NetworkX |
-| Testing | pytest |
+| Web app and map | Streamlit, Plotly |
+| Testing | pytest (and Streamlit AppTest for the app) |
 
 ## Team
 

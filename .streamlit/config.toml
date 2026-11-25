@@ -1,0 +1,11 @@
+# Streamlit settings for this project (read automatically by "streamlit run app.py").
+
+[server]
+# Only this computer can open the app. Without this, anyone on the same Wi-Fi could.
+address = "localhost"
+# Skip the "Email:" question Streamlit asks the first time it runs on a computer.
+showEmailPrompt = false
+
+[browser]
+# Don't send anonymous usage statistics to Streamlit.
+gatherUsageStats = false

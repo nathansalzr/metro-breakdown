@@ -35,7 +35,7 @@ stations = edges weighted by travel minutes), and an app that answers:
 | Dec 1-6 | Report, slides, two rehearsals, code walkthrough |
 | Mon Dec 7 | **Everything submitted** (confirm the real due date with Prof. Nguyen) |
 
-**Tech:** Python 3.9+, NetworkX, pytest. Streamlit + Plotly for the app.
+**Tech:** Python 3.11+, NetworkX, pytest. Streamlit + Plotly for the app.
 
 **Setup:** follow the README's Getting started, then `python -m pytest -v`. Everything should pass.
 
@@ -105,7 +105,7 @@ G = load_network("data/raw/gtfs_rail.zip")       # or "data/sample/gtfs" for the
 
 **Goal:** a rider picks two stations and sees the fastest route and its travel time.
 
-**Status:** logic done in `rerouting.py` (`find_route`). Still needed: the app screen and the LA demo.
+**Status:** done. Logic in `rerouting.py` (`find_route`), app in the Trip planner tab.
 
 **Files:** `src/metro/rerouting.py`, `app.py` (new)
 
@@ -123,8 +123,8 @@ Returns `None` if no route exists. Raises `ValueError` for a station ID that isn
 
 **Done when:**
 - [x] Sample route and minutes match the answer key
-- [ ] On LA data, Downtown Long Beach to Union Station shows 62 minutes and the station list in the app
-- [ ] Route drawn on the map
+- [x] On LA data, Downtown Long Beach to Union Station shows 62 minutes and the station list in the app
+- [x] Route drawn on the map
 
 **Evidence:** screenshot of the normal trip (demo step 1).
 
@@ -134,7 +134,7 @@ Returns `None` if no route exists. Raises `ValueError` for a station ID that isn
 
 **Goal:** a rider closes stations and sees the new route and how many minutes it adds, or "Unreachable".
 
-**Status:** logic done in `rerouting.py` (`reroute`); acceptance criteria AC1-AC3 pass. Still needed: map (AC4) and LA demo (AC5).
+**Status:** done. Logic in `rerouting.py` (`reroute`), app in the Trip planner tab; AC1-AC5 pass. Still needed: demo screenshots.
 
 **How to use it:**
 ```python
@@ -155,8 +155,8 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 - [x] AC1: closing Cedar Junction makes Alder to Ginkgo 13 min (+3)
 - [x] AC2: closing Ginkgo makes Alder to Ivy unreachable
 - [x] AC3: closing the start or end station shows unreachable
-- [ ] AC4: map shows closed stations in red and the new route
-- [ ] AC5: both LA closures above work in the app
+- [x] AC4: map shows closed stations in red and the new route
+- [x] AC5: both LA closures above work in the app
 
 **Tests:** `tests/test_rerouting.py`. **Evidence:** screenshots of the Pershing Square detour and the 7th St "Unreachable" (demo steps 2-3).
 
