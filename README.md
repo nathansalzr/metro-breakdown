@@ -149,6 +149,7 @@ metro-breakdown/
 │   └── inspect_network.py  Sanity report for a loaded network
 ├── data/sample/gtfs/       Made-up 10-station network for tests
 ├── docs/ROADMAP.md         Use-case walkthrough for the team
+├── CITATIONS.md            Data, libraries, references, AI assistance
 ├── tests/                  One test file per module
 ├── requirements.txt        Libraries the app needs
 ├── requirements-dev.txt    Plus testing tools
@@ -178,12 +179,21 @@ metro-breakdown/
 
 ## Team
 
-| Name | Role |
-|------|------|
-| Nathan Salazar | Project manager |
-| *Team members to be added* | |
+Each member presents the part they built. Roles match [docs/ROADMAP.md](docs/ROADMAP.md#2-who-owns-what).
+
+| Name | Role | Contributions |
+|------|------|---------------|
+| Nathan Salazar | Project manager | Network foundation (`graph.py`), GTFS loader (`gtfs.py`) and data scripts, reviews and merges, US-2 acceptance tests, ROADMAP and README |
+| Paula Awad | R2 Routing | Trip planning and rerouting (`rerouting.py`, US-2) |
+| *TBD* | R1 Data | |
+| *TBD* | R3 Centrality | |
+| *TBD* | R4 Resilience | |
+| *TBD* | R5 App | |
+| *TBD* | R6 QA and Docs | |
 
 ## Acknowledgments
+
+Full list of data, libraries, references, and AI assistance: [CITATIONS.md](CITATIONS.md).
 
 - **LA Metro** for publishing its rail schedule as open data ([gitlab.com/LACMTA/gtfs_rail](https://gitlab.com/LACMTA/gtfs_rail)).
 - **NetworkX** (BSD-3 license) for graph modeling and algorithms.
