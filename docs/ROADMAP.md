@@ -224,7 +224,7 @@ Needs a citable source of weekday boardings per station (R1). Fallback: count th
 | What | Owner | Done when |
 |---|---|---|
 | `app.py`: Streamlit app with tabs for UC-1/2, UC-3, UC-4 and a Plotly map | R5 | `streamlit run app.py` works from a fresh clone |
-| `CITATIONS.md`: data, libraries, tutorials, AI help | R6 | Every external source listed |
+| `CITATIONS.md`: data, libraries, tutorials | R6 | Every external source listed |
 | README team table + each member's contributions | Everyone | All six names and what each built |
 | US-10 clean-machine test | R6 | Someone who didn't write the README runs the app from it on Windows and Mac |
 | Report (2 pages) and slides | Everyone | Each member writes their section; two timed rehearsals |
