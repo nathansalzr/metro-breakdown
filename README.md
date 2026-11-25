@@ -261,7 +261,7 @@ Each member presents the part they built. Roles match [docs/ROADMAP.md](docs/ROA
 
 | Name | Role | Contributions |
 |------|------|---------------|
-| Nathan Salazar | Project manager | Network foundation (`graph.py`), GTFS loader (`gtfs.py`) and data scripts, reviews and merges, US-2 acceptance tests, ROADMAP and README |
+| Nathan Salazar | Project manager | Network foundation (`graph.py`), GTFS loader (`gtfs.py`) and data scripts, critical stations (`centrality.py`), stress test (`resilience.py`), Streamlit app (`app.py`), US-2 acceptance tests, reviews and merges, ROADMAP and README |
 | Paula Awad | R2 Routing | Trip planning and rerouting (`rerouting.py`, US-2) |
 | *TBD* | R1 Data | |
 | *TBD* | R3 Centrality | |
