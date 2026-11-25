@@ -186,7 +186,7 @@ metro-breakdown/
 │   └── inspect_network.py  Sanity report for a loaded network
 ├── data/sample/gtfs/       Made-up 10-station network for tests
 ├── docs/ROADMAP.md         Use-case walkthrough for the team
-├── CITATIONS.md            Data, libraries, references, AI assistance
+├── CITATIONS.md            Data, libraries, and references
 ├── tests/                  One test file per module
 ├── requirements.txt        Libraries the app needs
 ├── requirements-dev.txt    Plus testing tools
@@ -231,7 +231,7 @@ Each member presents the part they built. Roles match [docs/ROADMAP.md](docs/ROA
 
 ## Acknowledgments
 
-Full list of data, libraries, references, and AI assistance: [CITATIONS.md](CITATIONS.md).
+Full list of data, libraries, and references: [CITATIONS.md](CITATIONS.md).
 
 - **LA Metro** for publishing its rail schedule as open data ([gitlab.com/LACMTA/gtfs_rail](https://gitlab.com/LACMTA/gtfs_rail)).
 - **NetworkX** (BSD-3 license) for graph modeling and algorithms.
