@@ -5,7 +5,7 @@ Run from the project folder:  streamlit run app.py
 Tabs:
 - Trip planner (US-1, US-2): fastest route, and the detour or "Unreachable" when stations close.
 - Critical stations (US-3): busiest stations, single points of failure, and what one closure splits.
-- Stress test (US-4): coming next.
+- Stress test (US-4): random failures vs. targeted attacks on the hubs, as breakdown curves.
 
 The app only shows results. All network logic lives in src/metro/ and has its own tests.
 """
@@ -25,6 +25,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from metro.centrality import pieces_after_closing, single_points_of_failure, top_stations  # noqa: E402
 from metro.gtfs import load_network  # noqa: E402
+from metro.resilience import breakdown_curve, removal_order  # noqa: E402
 from metro.rerouting import reroute  # noqa: E402
 
 SOURCES = {
@@ -257,6 +258,59 @@ def critical_stations(G: nx.Graph, source: str) -> None:
     st.plotly_chart(pieces_map(G, pieces, closed), width="stretch")
 
 
+# Label and color for each strategy on the chart.
+STRESS_LINES = [
+    ("random", "Random failures", "Random failures (average of 20 runs)", "#7f7f7f"),
+    ("degree", "Most connections first", "Targeted: most connections first", "#ff7f0e"),
+    ("betweenness", "Busiest stations first", "Targeted: busiest stations first", "#d62728"),
+]
+
+
+@st.cache_data(show_spinner="Running the stress test...")
+def get_curve(path: str, k: int, strategy: str, seed: int) -> List[float]:
+    """Breakdown curve for one strategy (cached, so switching tabs doesn't recompute it)."""
+    return breakdown_curve(get_network(path), k, strategy, seed=seed)
+
+
+def stress_test(G: nx.Graph, source: str) -> None:
+    key = "sample" if source == "Sample network" else "la"
+    path = str(SOURCES[source])
+    n = G.number_of_nodes()
+
+    st.caption("Close stations one at a time and watch how much of the network still hangs "
+               "together: the share of all stations in the largest connected piece.")
+    col1, col2 = st.columns(2)
+    k = col1.slider("Stations to close", 1, min(30, n), min(10, n // 2), key=f"kstress_{key}")
+    seed = int(col2.number_input("Random seed", 0, 9999, 0, key=f"seed_{key}",
+                                 help="The same seed always gives the same random curve."))
+
+    curves = {strategy: get_curve(path, k, strategy, seed) for strategy, _, _, _ in STRESS_LINES}
+
+    st.write(f"**Stations still in the largest piece after {k} closures:**")
+    cols = st.columns(3)
+    for col, (strategy, short, _, _) in zip(cols, STRESS_LINES):
+        col.metric(short, f"{curves[strategy][-1]:.0%}")
+
+    fig = go.Figure()
+    for strategy, _, label, color in STRESS_LINES:
+        fig.add_trace(go.Scatter(
+            x=list(range(k + 1)), y=[share * 100 for share in curves[strategy]],
+            mode="lines+markers", name=label, line=dict(color=color, width=3),
+        ))
+    fig.update_layout(
+        xaxis_title="Stations closed", yaxis_title="Stations in the largest piece (%)",
+        yaxis=dict(range=[0, 105]), height=450, margin=dict(l=0, r=0, t=10, b=0),
+        legend=dict(x=0.99, y=0.99, xanchor="right", bgcolor="rgba(255,255,255,0.85)",
+                    font=dict(color="#222222")),
+    )
+    st.plotly_chart(fig, width="stretch")
+
+    with st.expander("Which stations the targeted attacks close"):
+        for strategy, _, label, _ in STRESS_LINES[1:]:
+            order = removal_order(G, k, strategy)
+            st.write(f"**{label}:** " + " > ".join(name(G, s) for s in order))
+
+
 def main() -> None:
     st.set_page_config(page_title="Metro Breakdown", layout="wide")
     st.title("Metro Breakdown")
@@ -277,7 +331,7 @@ def main() -> None:
     with critical:
         critical_stations(G, source)
     with stress:
-        st.info("Coming next: random failures vs. a targeted attack on the hubs (US-4).")
+        stress_test(G, source)
 
 
 if __name__ == "__main__":  # streamlit run sets this; lets tests import minutes_text

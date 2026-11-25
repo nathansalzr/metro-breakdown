@@ -4,8 +4,8 @@
 
 CECS 427 Dynamic Networks · California State University, Long Beach · Fall 2026
 
-> **Status: in development.** The real LA Metro rail network loads. Rerouting around closed stations
-> and critical-station analysis work and are tested, with Trip planner and Critical stations tabs in the app. The Stress test is next (see [Roadmap](#roadmap)).
+> **Status: in development.** The real LA Metro rail network loads. Rerouting around closed stations,
+> critical-station analysis, and the stress test work and are tested, each with its own tab in the app (see [Roadmap](#roadmap)).
 
 ---
 
@@ -167,6 +167,45 @@ On LA data the top 3 are Pico, 7th St/Metro Center, and Willowbrook/Rosa Parks.
 95 of 111 stations are single points of failure (articulation points), and 100 of 112 segments
 are bridges. Tests: `tests/test_centrality.py`. App: the **Critical stations** tab.
 
+### Phase 5: Stress test
+
+`src/metro/resilience.py` compares random failures with a targeted attack on the hubs:
+
+- `breakdown_curve(G, k, strategy, seed=0)` closes k stations one at a time and returns the share of
+  stations still in the largest connected piece after each closure (k + 1 numbers, starting at 1.0).
+- Strategies: `"random"` (average of 20 runs; the same seed gives the same curve), `"degree"` (most
+  connections first), and `"betweenness"` (busiest station first). The targeted ones re-pick after every closure.
+- `removal_order(G, k, strategy)` lists the stations a targeted strategy closes, in order.
+
+**Try it** (sample network, in `python`):
+
+```python
+import sys; sys.path.insert(0, "src")
+from metro.gtfs import load_network
+from metro.resilience import breakdown_curve
+
+G = load_network("data/sample/gtfs")
+breakdown_curve(G, 1, "betweenness")   # [1.0, 0.8]: closing Cedar Junction cuts off Fir
+```
+
+On LA data, after 10 closures the largest piece holds 43% of stations under random failures (seed 0),
+22% when the most-connected stations go first, and 9% when the busiest stations go first.
+Tests: `tests/test_resilience.py`. App: the **Stress test** tab.
+
+### Phase 6: The app
+
+`app.py` puts phases 3 to 5 on one page (`streamlit run app.py`; see [Getting started](#getting-started)).
+The sidebar picks the LA network or the sample network. The app only displays results; all
+network logic stays in `src/metro/`.
+
+| Tab | What you do | What you see |
+|-----|-------------|--------------|
+| Trip planner | Pick two stations and any closed stations | Minutes before and after, the detour or "Unreachable", and a map |
+| Critical stations | Pick how many stations to rank, and one station to close | The busiest stations, every single point of failure, and the pieces a closure leaves |
+| Stress test | Pick how many stations to close, and a random seed | Three breakdown curves on one chart, and which stations the targeted attacks close |
+
+Tests: `tests/test_app.py` drives each tab on the sample network with Streamlit's AppTest.
+
 **Team guide:** [docs/ROADMAP.md](docs/ROADMAP.md) walks through every use case: what it does, the files,
 the steps, and how we know it's done.
 
@@ -180,7 +219,8 @@ metro-breakdown/
 │   ├── graph.py            Phase 1: add_segment, close_stations
 │   ├── gtfs.py             Phase 2: load_network (GTFS schedule -> network)
 │   ├── rerouting.py        Phase 3: find_route, reroute
-│   └── centrality.py       Phase 4: top_stations, single_points_of_failure, pieces_after_closing
+│   ├── centrality.py       Phase 4: top_stations, single_points_of_failure, pieces_after_closing
+│   └── resilience.py       Phase 5: breakdown_curve, removal_order
 ├── scripts/
 │   ├── fetch_gtfs.py       Download LA Metro's rail schedule
 │   └── inspect_network.py  Sanity report for a loaded network
@@ -203,8 +243,8 @@ metro-breakdown/
 | 2 | Load LA Metro's rail schedule | Complete |
 | 3 | Trip planning and rerouting around closed stations | Complete (demo screenshots next) |
 | 4 | Critical-station analysis (centrality, single points of failure) | Complete |
-| 5 | Resilience experiments: random vs. targeted closures | Planned |
-| 6 | Interactive web app with a map | In progress (Trip planner and Critical stations tabs done; Stress test tab next) |
+| 5 | Resilience experiments: random vs. targeted closures | Complete |
+| 6 | Interactive web app with a map | Done (clean-machine test and demo screenshots next) |
 
 ## Technology
 
