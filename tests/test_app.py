@@ -126,3 +126,33 @@ def test_closing_an_end_station_keeps_one_piece():
     at.selectbox(key="close_sample").select("E").run()
     assert not at.exception
     assert "one piece (9 stations)" in at.tabs[1].success[0].value
+
+
+# --- Stress test tab (US-4) ----------------------------------------------------------------
+
+def test_stress_tab_plots_three_curves_with_k_plus_1_points():
+    at = sample_app()
+    at.slider(key="kstress_sample").set_value(3).run()
+    assert not at.exception
+    figure = json.loads(at.tabs[2].get("plotly_chart")[0].proto.spec)
+    assert len(figure["data"]) == 3
+    assert all(len(trace["y"]) == 4 and trace["y"][0] == 100 for trace in figure["data"])
+
+
+def test_stress_tab_targeted_attack_matches_resilience():
+    # Closing Cedar Junction first leaves 8 of 10 stations together (tests/test_resilience.py).
+    at = sample_app()
+    at.slider(key="kstress_sample").set_value(1).run()
+    values = {m.label: m.value for m in at.tabs[2].metric}
+    assert values["Busiest stations first"] == "80%"
+    assert values["Most connections first"] == "80%"
+
+
+def test_stress_tab_lists_both_targeted_orders():
+    at = sample_app()
+    at.slider(key="kstress_sample").set_value(2).run()
+    lines = [md.value for md in at.tabs[2].markdown if md.value.startswith("**Targeted")]
+    assert lines == [
+        "**Targeted: most connections first:** Cedar Junction > Dogwood",
+        "**Targeted: busiest stations first:** Cedar Junction > Dogwood",
+    ]

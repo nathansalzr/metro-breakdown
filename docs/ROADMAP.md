@@ -194,7 +194,7 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 
 **Goal:** compare random station failures with a targeted attack on the most important stations.
 
-**Status:** not started. Owner: R4. Needs UC-3.
+**Status:** done. Logic in `resilience.py`, app in the Stress test tab. Owner: R4.
 
 **Files:** `src/metro/resilience.py` (new), `tests/test_resilience.py` (new)
 
@@ -204,9 +204,9 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 3. App tab: pick k and a seed, plot the three curves on one chart.
 
 **Done when:**
-- [ ] Curves have k+1 points and start at 1.0
-- [ ] Same seed gives the same random curve
-- [ ] On LA data, the betweenness attack drops faster than random
+- [x] Curves have k+1 points and start at 1.0
+- [x] Same seed gives the same random curve
+- [x] On LA data, the betweenness attack drops faster than random (9% vs 43% after 10 closures)
 
 **Evidence:** the three-curve chart for 10 removals (demo step 5).
 
