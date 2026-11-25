@@ -4,9 +4,8 @@ This is the **how**: what each use case does, which files it touches, and how we
 The **status** (owner, hours, To Do / Done) lives in our backlog workbook in OneDrive:
 `427-Metro-breakdown/MetroBreakdown_ProductBacklog.xlsx`. Story IDs (US-1, US-2, ...) are the same in both places.
 
-> The workbook's task list was written before two decisions: we use **NetworkX's algorithms** (not
-> hand-written ones) and we **build the network straight from GTFS** (no SQLite). Where the two
-> disagree, follow this file.
+> The workbook was last brought in line with this file on 11/24 (US-1 to US-4 done, US-10 in progress).
+> Where the two disagree, follow this file.
 
 ---
 
@@ -48,12 +47,14 @@ stations = edges weighted by travel minutes), and an app that answers:
 | PM | Nathan Salazar | Repo, reviews, merges, integration, rehearsal |
 | R1 Data | _TBD_ | `gtfs.py`, LA data checks, ridership data (US-5) |
 | R2 Routing | Paula Awad (US-2 merged) | `rerouting.py`: trip planning and closures (US-1, US-2) |
-| R3 Centrality | _TBD_ | `centrality.py`: critical stations (US-3) |
-| R4 Resilience | _TBD_ | `resilience.py`: breakdown curves (US-4) |
-| R5 App | _TBD_ | `app.py`: Streamlit app and map |
+| R3 Centrality | _TBD_ | `centrality.py` and the Critical stations tab (US-3) |
+| R4 Resilience | _TBD_ | `resilience.py` and the Stress test tab (US-4) |
+| R5 App | _TBD_ | `app.py`: Streamlit app and maps |
 | R6 QA & Docs | _TBD_ | Tests, README clean-machine test, CITATIONS, report editing |
 
-Everyone writes their own report section and presents their own part.
+Everyone writes their own report section and presents their own part. The code for US-1 to US-4
+is built and merged, so each owner's job now is to learn their part well enough to explain every line,
+present it in the demo, and write its report section.
 
 ---
 
@@ -61,18 +62,19 @@ Everyone writes their own report section and presents their own part.
 
 ```mermaid
 flowchart LR
-    US6[US-6 Load LA data: done] --> US1[US-1 Plan a trip: logic done]
-    US1 --> US2[US-2 Closures: logic done]
-    US6 --> US3[US-3 Critical stations]
-    US3 --> US4[US-4 Stress test]
-    US2 --> APP[App + map]
+    US6[US-6 Load LA data: done] --> US1[US-1 Plan a trip: done]
+    US1 --> US2[US-2 Closures: done]
+    US6 --> US3[US-3 Critical stations: done]
+    US3 --> US4[US-4 Stress test: done]
+    US2 --> APP[App + maps: done]
     US3 --> APP
     US4 --> APP
     APP --> US10[US-10 README clean-machine test]
     US10 --> FREEZE[Feature freeze]
 ```
 
-**Can start now, no waiting:** US-3 (critical stations), the app shell, CITATIONS.md, the report skeleton.
+**Left before the freeze:** US-10 clean-machine test, demo screenshots, the README team table, and the
+report skeleton. US-5 only if there's time.
 
 ---
 
@@ -168,7 +170,15 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 
 **Status:** done. Logic in `centrality.py`, app in the Critical stations tab. Owner: R3.
 
-**Files:** `src/metro/centrality.py` (new), `tests/test_centrality.py` (new)
+**Files:** `src/metro/centrality.py`, `tests/test_centrality.py`, `app.py` (Critical stations tab)
+
+**How to use it:**
+```python
+from metro.centrality import top_stations, single_points_of_failure, pieces_after_closing
+top_stations(G, 3)                     # [(station_id, name, share of fastest routes), ...]
+single_points_of_failure(G)            # {"stations": [...], "segments": [(u, v), ...]}
+pieces_after_closing(G, "C")           # sample: [{8 stations}, {"F"}], largest first
+```
 
 **Steps:**
 1. `top_stations(G, k)`: rank stations with `nx.betweenness_centrality(G, weight="weight")`; return the top k as (station_id, name, score). Ties are sorted by name.
@@ -196,11 +206,19 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 
 **Status:** done. Logic in `resilience.py`, app in the Stress test tab. Owner: R4.
 
-**Files:** `src/metro/resilience.py` (new), `tests/test_resilience.py` (new)
+**Files:** `src/metro/resilience.py`, `tests/test_resilience.py`, `app.py` (Stress test tab)
+
+**How to use it:**
+```python
+from metro.resilience import breakdown_curve, removal_order
+breakdown_curve(G, 1, "betweenness")   # sample: [1.0, 0.8]
+breakdown_curve(G, 10, "random", seed=0)
+removal_order(G, 3, "degree")          # the stations a targeted attack closes, in order
+```
 
 **Steps:**
 1. `breakdown_curve(G, k, strategy, seed=0)`: remove stations one at a time and record the share of stations still in the largest connected piece after each removal (`max(nx.connected_components(...), key=len)`).
-2. Strategies: `"random"` (use `random.Random(seed)`, average 20 runs), `"degree"` (most connections first), `"betweenness"` (recompute each step, highest first).
+2. Strategies: `"random"` (use `random.Random(seed)`, average 20 runs), `"degree"` (most connections first), `"betweenness"` (busiest first). Both targeted strategies re-pick after every closure; ties go by name.
 3. App tab: pick k and a seed, plot the three curves on one chart.
 
 **Done when:**
@@ -221,13 +239,14 @@ Needs a citable source of weekday boardings per station (R1). Fallback: count th
 
 ### Team process: app, docs, and wrap-up
 
-| What | Owner | Done when |
-|---|---|---|
-| `app.py`: Streamlit app with tabs for UC-1/2, UC-3, UC-4 and a Plotly map | R5 | `streamlit run app.py` works from a fresh clone |
-| `CITATIONS.md`: data, libraries, tutorials | R6 | Every external source listed |
-| README team table + each member's contributions | Everyone | All six names and what each built |
-| US-10 clean-machine test | R6 | Someone who didn't write the README runs the app from it on Windows and Mac |
-| Report (2 pages) and slides | Everyone | Each member writes their section; two timed rehearsals |
+| What | Owner | Done when | Status |
+|---|---|---|---|
+| `app.py`: Streamlit app with tabs for UC-1/2, UC-3, UC-4 and Plotly maps | R5 | `streamlit run app.py` works from a fresh clone | Built; waiting on US-10 |
+| `CITATIONS.md`: data, libraries, tutorials | R6 | Every external source listed | Done; add new sources as you go |
+| README team table + each member's contributions | Everyone | All six names and what each built | Waiting on names |
+| US-10 clean-machine test | R6 | Someone who didn't write the README runs the app from it on Windows and Mac | Not started |
+| Demo screenshots (evidence for UC-1 to UC-4) | R6 | One screenshot per demo step | Not started |
+| Report (2 pages) and slides | Everyone | Each member writes their section; two timed rehearsals | Not started |
 
 ---
 
