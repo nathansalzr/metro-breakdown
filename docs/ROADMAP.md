@@ -166,13 +166,13 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 
 **Goal:** a planner sees which stations carry the most trips and which ones would split the network if closed.
 
-**Status:** not started. Owner: R3.
+**Status:** logic done in `centrality.py`; tests match the answer key and the LA check passes. Still needed: the app tab. Owner: R3.
 
 **Files:** `src/metro/centrality.py` (new), `tests/test_centrality.py` (new)
 
 **Steps:**
-1. `top_stations(G, k)`: rank stations with `nx.betweenness_centrality(G, weight="weight")`; return the top k as (name, score).
-2. `single_points_of_failure(G)`: `nx.articulation_points(G)` and `nx.bridges(G)`, returned as station names.
+1. `top_stations(G, k)`: rank stations with `nx.betweenness_centrality(G, weight="weight")`; return the top k as (station_id, name, score). Ties are sorted by name.
+2. `single_points_of_failure(G)`: `nx.articulation_points(G)` and `nx.bridges(G)`, returned as station IDs (the same as `rerouting.py`; the app looks up names).
 3. `pieces_after_closing(G, station)`: `nx.connected_components(close_stations(G, [station]))`, largest first.
 4. Docstrings explain betweenness and articulation points in plain words (Definition of Done).
 
@@ -182,11 +182,11 @@ result["extra_minutes"]   # 3, or None if either trip is impossible
 - Bridges: A-B, A-J, C-F, D-E, G-H, H-I
 
 **Done when:**
-- [ ] Tests match the answer key above
-- [ ] On LA data the top 3 are Pico, 7th St/Metro Center and Willowbrook/Rosa Parks (check), in under 5 seconds
+- [x] Tests match the answer key above
+- [x] On LA data the top 3 are Pico, 7th St/Metro Center and Willowbrook/Rosa Parks, in under 5 seconds (0.04 s)
 - [ ] App tab lists the top k and every single point of failure
 
-**Evidence:** the LA top-10 table and the "95 of 111 single points of failure" result (demo step 4).
+**Evidence:** the LA top-10 table and the "95 of 111 stations are single points of failure" result, which counts stations only (the 100 bridges are segments). Demo step 4.
 
 ---
 

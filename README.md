@@ -4,8 +4,8 @@
 
 CECS 427 Dynamic Networks · California State University, Long Beach · Fall 2026
 
-> **Status: in development.** The real LA Metro rail network loads, and rerouting around closed
-> stations works and is tested. Critical-station analysis and the app are next (see [Roadmap](#roadmap)).
+> **Status: in development.** The real LA Metro rail network loads. Rerouting around closed stations
+> and critical-station analysis work and are tested. The app's Trip planner tab works; its other tabs are next (see [Roadmap](#roadmap)).
 
 ---
 
@@ -143,6 +143,30 @@ reroute(G, "A", "G", ["C"])   # closing Cedar Junction: 10 -> 13 minutes, +3
 
 Tests: `tests/test_rerouting.py`. App: the **Trip planner** tab (see [Start the app](#getting-started)).
 
+### Phase 4: Critical stations
+
+`src/metro/centrality.py` answers the planner's question:
+
+- `top_stations(G, k)` ranks stations by betweenness centrality: how many fastest routes pass through each one.
+- `single_points_of_failure(G)` lists the stations (articulation points) and segments (bridges) whose closure splits the network.
+- `pieces_after_closing(G, station)` shows the separate pieces left after closing one station, largest first.
+
+**Try it** (sample network, in `python`):
+
+```python
+import sys; sys.path.insert(0, "src")
+from metro.gtfs import load_network
+from metro.centrality import top_stations, pieces_after_closing
+
+G = load_network("data/sample/gtfs")
+top_stations(G, 3, normalized=False)   # Cedar Junction 20, Birch 14, Ginkgo 14
+pieces_after_closing(G, "C")           # Fir is cut off from the other 8 stations
+```
+
+On LA data the top 3 are Pico, 7th St/Metro Center, and Willowbrook/Rosa Parks.
+95 of 111 stations are single points of failure (articulation points), and 100 of 112 segments
+are bridges. Tests: `tests/test_centrality.py`.
+
 **Team guide:** [docs/ROADMAP.md](docs/ROADMAP.md) walks through every use case: what it does, the files,
 the steps, and how we know it's done.
 
@@ -155,12 +179,14 @@ metro-breakdown/
 ├── src/metro/
 │   ├── graph.py            Phase 1: add_segment, close_stations
 │   ├── gtfs.py             Phase 2: load_network (GTFS schedule -> network)
-│   └── rerouting.py        Phase 3: find_route, reroute
+│   ├── rerouting.py        Phase 3: find_route, reroute
+│   └── centrality.py       Phase 4: top_stations, single_points_of_failure, pieces_after_closing
 ├── scripts/
 │   ├── fetch_gtfs.py       Download LA Metro's rail schedule
 │   └── inspect_network.py  Sanity report for a loaded network
 ├── data/sample/gtfs/       Made-up 10-station network for tests
 ├── docs/ROADMAP.md         Use-case walkthrough for the team
+├── CITATIONS.md            Data, libraries, references, AI assistance
 ├── tests/                  One test file per module
 ├── requirements.txt        Libraries the app needs
 ├── requirements-dev.txt    Plus testing tools
@@ -176,7 +202,7 @@ metro-breakdown/
 | 1 | Network foundation | Complete |
 | 2 | Load LA Metro's rail schedule | Complete |
 | 3 | Trip planning and rerouting around closed stations | Complete (demo screenshots next) |
-| 4 | Critical-station analysis (centrality, single points of failure) | Next |
+| 4 | Critical-station analysis (centrality, single points of failure) | In progress (logic done, app screen next) |
 | 5 | Resilience experiments: random vs. targeted closures | Planned |
 | 6 | Interactive web app with a map | In progress (Trip planner tab done; Critical stations and Stress test tabs next) |
 
@@ -191,12 +217,21 @@ metro-breakdown/
 
 ## Team
 
-| Name | Role |
-|------|------|
-| Nathan Salazar | Project manager |
-| *Team members to be added* | |
+Each member presents the part they built. Roles match [docs/ROADMAP.md](docs/ROADMAP.md#2-who-owns-what).
+
+| Name | Role | Contributions |
+|------|------|---------------|
+| Nathan Salazar | Project manager | Network foundation (`graph.py`), GTFS loader (`gtfs.py`) and data scripts, reviews and merges, US-2 acceptance tests, ROADMAP and README |
+| Paula Awad | R2 Routing | Trip planning and rerouting (`rerouting.py`, US-2) |
+| *TBD* | R1 Data | |
+| *TBD* | R3 Centrality | |
+| *TBD* | R4 Resilience | |
+| *TBD* | R5 App | |
+| *TBD* | R6 QA and Docs | |
 
 ## Acknowledgments
+
+Full list of data, libraries, references, and AI assistance: [CITATIONS.md](CITATIONS.md).
 
 - **LA Metro** for publishing its rail schedule as open data ([gitlab.com/LACMTA/gtfs_rail](https://gitlab.com/LACMTA/gtfs_rail)).
 - **NetworkX** (BSD-3 license) for graph modeling and algorithms.
