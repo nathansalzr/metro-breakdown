@@ -4,8 +4,8 @@
 
 CECS 427 Dynamic Networks · California State University, Long Beach · Fall 2026
 
-> **Status: in development.** The real LA Metro rail network loads, and rerouting around closed
-> stations works and is tested. Critical-station analysis and the app are next (see [Roadmap](#roadmap)).
+> **Status: in development.** The real LA Metro rail network loads. Rerouting around closed stations
+> and critical-station analysis work and are tested. The app is next (see [Roadmap](#roadmap)).
 
 ---
 
@@ -133,6 +133,30 @@ reroute(G, "A", "G", ["C"])   # closing Cedar Junction: 10 -> 13 minutes, +3
 
 Tests: `tests/test_rerouting.py`. The app screen for this phase is still to come.
 
+### Phase 4: Critical stations
+
+`src/metro/centrality.py` answers the planner's question:
+
+- `top_stations(G, k)` ranks stations by betweenness centrality: how many fastest routes pass through each one.
+- `single_points_of_failure(G)` lists the stations (articulation points) and segments (bridges) whose closure splits the network.
+- `pieces_after_closing(G, station)` shows the separate pieces left after closing one station, largest first.
+
+**Try it** (sample network, in `python`):
+
+```python
+import sys; sys.path.insert(0, "src")
+from metro.gtfs import load_network
+from metro.centrality import top_stations, pieces_after_closing
+
+G = load_network("data/sample/gtfs")
+top_stations(G, 3, normalized=False)   # Cedar Junction 20, Birch 14, Ginkgo 14
+pieces_after_closing(G, "C")           # Fir is cut off from the other 8 stations
+```
+
+On LA data the top 3 are Pico, 7th St/Metro Center, and Willowbrook/Rosa Parks.
+95 of 111 stations are single points of failure (articulation points), and 100 of 112 segments
+are bridges. Tests: `tests/test_centrality.py`.
+
 **Team guide:** [docs/ROADMAP.md](docs/ROADMAP.md) walks through every use case: what it does, the files,
 the steps, and how we know it's done.
 
@@ -143,7 +167,8 @@ metro-breakdown/
 ├── src/metro/
 │   ├── graph.py            Phase 1: add_segment, close_stations
 │   ├── gtfs.py             Phase 2: load_network (GTFS schedule -> network)
-│   └── rerouting.py        Phase 3: find_route, reroute
+│   ├── rerouting.py        Phase 3: find_route, reroute
+│   └── centrality.py       Phase 4: top_stations, single_points_of_failure, pieces_after_closing
 ├── scripts/
 │   ├── fetch_gtfs.py       Download LA Metro's rail schedule
 │   └── inspect_network.py  Sanity report for a loaded network
@@ -165,7 +190,7 @@ metro-breakdown/
 | 1 | Network foundation | Complete |
 | 2 | Load LA Metro's rail schedule | Complete |
 | 3 | Trip planning and rerouting around closed stations | In progress (logic done, app screen next) |
-| 4 | Critical-station analysis (centrality, single points of failure) | Next |
+| 4 | Critical-station analysis (centrality, single points of failure) | In progress (logic done, app screen next) |
 | 5 | Resilience experiments: random vs. targeted closures | Planned |
 | 6 | Interactive web app with a map | Planned |
 
