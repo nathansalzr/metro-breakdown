@@ -15,6 +15,13 @@ in the same pull request.
 Accessed November 2026. The download is not committed; `scripts/fetch_gtfs.py` recreates it.
 `data/sample/gtfs/` is a made-up network the team wrote for testing, not real Metro data.
 
+**LA Metro data terms:** Metro's open data comes with its own
+[Terms & Conditions](https://developer.metro.net/terms-conditions/), not an open license such as
+Creative Commons. They allow using and displaying the data, with conditions. The main ones for us
+are crediting Metro as the data provider and not suggesting that Metro made or endorses this
+project; see the terms for the full list. Metro Breakdown is a student project and is not
+affiliated with or endorsed by LA Metro.
+
 ## Libraries
 
 | Library | License | What we use it for | Link |
