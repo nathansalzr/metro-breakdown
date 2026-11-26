@@ -5,11 +5,13 @@ After changing a widget, call .run() again (that's what a click does in the real
 """
 
 import json
+import shutil
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-APP = str(Path(__file__).resolve().parent.parent / "app.py")
+ROOT = Path(__file__).resolve().parent.parent
+APP = str(ROOT / "app.py")
 
 
 def sample_app():
@@ -22,6 +24,28 @@ def sample_app():
 def test_app_starts_without_errors():
     at = sample_app()
     assert not at.exception
+    assert len(at.tabs) == 3
+
+
+def test_app_falls_back_to_the_sample_without_la_data(tmp_path):
+    # US-6-AC4 in the backlog workbook: a fresh clone has no data/raw/gtfs_rail.zip until
+    # fetch_gtfs.py runs. Copy the app into an empty folder (no LA file) so this test never
+    # depends on the download. src/ is copied so the test also runs on its own.
+    shutil.copy(ROOT / "app.py", tmp_path / "app.py")
+    shutil.copytree(ROOT / "src", tmp_path / "src")
+    shutil.copytree(ROOT / "data" / "sample", tmp_path / "data" / "sample")
+
+    at = AppTest.from_file(str(tmp_path / "app.py"), default_timeout=30)
+    at.run()
+    assert not at.exception
+    assert at.sidebar.radio(key="source").value == "Sample network"
+    assert at.sidebar.markdown[0].value == "10 stations, 11 segments"
+
+    # Picking LA anyway explains what to run and keeps showing the sample network.
+    at.sidebar.radio(key="source").set_value("LA Metro rail").run()
+    assert not at.exception
+    assert "fetch_gtfs.py" in at.sidebar.warning[0].value
+    assert at.sidebar.markdown[0].value == "10 stations, 11 segments"
     assert len(at.tabs) == 3
 
 
